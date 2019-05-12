@@ -3,7 +3,9 @@ from .form import InvoiceForm
 from .models import Invoice
 from graphos.renderers.gchart import LineChart
 from graphos.sources.simple import SimpleDataSource
+from graphos.renderers.gchart import BarChart
 # Create your views here.
+
 
 def create(request):
     if request.method == 'POST':
@@ -19,27 +21,46 @@ def create(request):
         form=InvoiceForm()
     return render(request,'create.html',{'form':form})
 def analyse(request):
+    StartDate=None
+    EndDate=None
+    if request.method=='POST':
+        StartDate=request.POST['start']
+        EndDate=request.POST['end']
 
-    queryset = Invoice.objects.all()
-    dataInvoice=[['Invoice Number','Invoice Sum']]
-    dataGST=[['Invoice Number','GST Sum']]
-    dataTotalAmount=[['Invoice Number','Total Amount Sum']]
+        if EndDate is None or StartDate is None:
+            queryset=Invoice.objects.all()
+        else:
+            queryset = Invoice.objects.filter(InvoiceSubmission__range=[StartDate, EndDate])
+    else:
+        queryset=Invoice.objects.all()
+    querysetquarter=Invoice.objects.all()
     sumInvoiceAmount=0
     sumGST=0
-    sumtotalAmount=0
-
-    k=1
+    sumTotalAmount=0
+    q1=0
+    q2=0
+    q3=0
+    q4=0
     for i in queryset:
         sumInvoiceAmount=i.InvoiceAmount+sumInvoiceAmount
         sumGST=i.GSTAmount+sumGST
-        sumtotalAmount=i.TotalAmount+sumtotalAmount
-        dataInvoice.insert(k,[k,sumInvoiceAmount])
-        dataGST.insert(k,[k,sumGST])
-        dataTotalAmount.insert(k,[k,sumtotalAmount])
-        k=k+1
+        sumTotalAmount=i.TotalAmount+sumTotalAmount
+    for i in querysetquarter:
+        if 1 <= i.InvoiceSubmission.month <= 3:
+            q1 = q1 + i.InvoiceAmount
+        if 4 <= i.InvoiceSubmission.month <= 6:
+            q2 = q2 + i.InvoiceAmount
+        if 7 <= i.InvoiceSubmission.month <= 9:
+            q3 = q3 + i.InvoiceAmount
+        if 10 <= i.InvoiceSubmission.month <= 12:
+            q4 = q4 + i.InvoiceAmount
 
-    line_chart_invoice=LineChart(SimpleDataSource(data=dataInvoice))
-    line_chart_GST=LineChart(SimpleDataSource(data=dataGST))
-    line_chart_Total_Amount=LineChart(SimpleDataSource(data=dataTotalAmount))
-    return render(request, 'analyse.html', {'InvoiceChart': line_chart_invoice,'GSTChart':line_chart_GST,'TotalAmount':line_chart_Total_Amount})
 
+
+    bardata = [['Sum Amounts','RS'],['Invoice Sum',sumInvoiceAmount], ['GST Sum',sumGST],['Total Sum',sumTotalAmount]]
+    quarterdata=[['Quarter','Invoice Amount'],['Quarter 1',q1],['Quarter 2',q2],['Quarter 3',q3],['Quarter 4',q4]]
+    bar_chart=BarChart(SimpleDataSource(data=bardata))
+    bar_chart_quarter=BarChart(SimpleDataSource(data=quarterdata))
+    return render(request, 'analyse.html', {'bar_chart':bar_chart,'quarter':bar_chart_quarter,'e':EndDate,'s':StartDate})
+#
+# def addclient(request):

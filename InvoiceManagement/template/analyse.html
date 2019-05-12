@@ -6,12 +6,33 @@
 <script type="text/javascript">
     google.load("visualization", "1", {packages:["corechart"]});
 </script>
+    <!--<script src="http://yui.yahooapis.com/3.10.0/build/yui/yui-min.js"></script>-->
 
     <title>Title</title>
 </head>
 <body>
-{{InvoiceChart.as_html}}
-{{GSTChart.as_html}}
-{{TotalAmount.as_html}}
+<!--{{InvoiceChart.as_html}}-->
+<!--{{GSTChart.as_html}}-->
+<!--{{TotalAmount.as_html}}-->
+{{bar_chart.as_html}}
+<form action="" method="post">
+    {% csrf_token %}
+<div class="row">
+                  <div class="col-sm-4">
+                    <div class="form-group">
+                      <span class="form-label">Start Date</span>
+                      <input class="form-control" type="date" value={{s}} id="start" name="start" required>
+                    </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="form-group">
+                      <span class="form-label">End DAte</span>
+                      <input class="form-control" value={{e}} type="date" id="end" name="end" required>
+                    </div>
+                  </div>
+</div>
+     <input type="submit" value="Submit"class="btn btn-primary">
+</form>
+{{quarter.as_html}}
 </body>
 </html>
