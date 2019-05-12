@@ -18,4 +18,17 @@ class InvoiceForm(ModelForm):
                 attrs = {'class': 'form-control', 'placeholder': 'Select a date',
                          'type': 'date'}),
         }
+        labels = {
+            "ClientName": "Client Name",
+            'ProjectName':'Project Name',
+            'InvoiceAmount':'Invoice Amount',
+            'InvoiceSubmission':'Invoice Submission',
+            'InvoiceDueDate':'Invoice Due Date',
+            'InvoiceStatus': 'Invoice Status'
 
+        }
+
+class ClientForm(ModelForm):
+    class Meta:
+        model=ClientName
+        fields=['name']

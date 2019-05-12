@@ -13,7 +13,7 @@ status=(
     ('recieved_payment','Recieved Payment')
 )
 class Invoice(models.Model):
-    ClientName =models.ForeignKey('ClientName',on_delete=models.CASCADE)
+    ClientName =models.ForeignKey('ClientName',on_delete=models.CASCADE,)
     ProjectName = models.CharField(max_length=20)
     InvoiceAmount=models.IntegerField()
     GSTAmount=models.IntegerField()

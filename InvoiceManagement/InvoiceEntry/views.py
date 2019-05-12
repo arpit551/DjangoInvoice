@@ -1,15 +1,18 @@
 from django.shortcuts import render
-from .form import InvoiceForm
+from .form import InvoiceForm,ClientForm
 from .models import Invoice
-from graphos.renderers.gchart import LineChart
 from graphos.sources.simple import SimpleDataSource
 from graphos.renderers.gchart import BarChart
-# Create your views here.
-
+from django.contrib import messages
 
 def create(request):
     if request.method == 'POST':
+        formclient = ClientForm(request.POST)
         form=InvoiceForm(request.POST)
+        if formclient.is_valid():
+            formclient.save()
+            messages.success(request, 'Client added Successful')
+
         if form.is_valid():
             f= form.save(commit=False)
             f.GSTAmount=f.InvoiceAmount*18/100
@@ -18,8 +21,10 @@ def create(request):
             return render(request, 'invoice.html', {'f': f})
 
     else:
+
         form=InvoiceForm()
-    return render(request,'create.html',{'form':form})
+    formclient = ClientForm()
+    return render(request,'create.html',{'form':form,'formclient':formclient})
 def analyse(request):
     StartDate=None
     EndDate=None
@@ -59,8 +64,6 @@ def analyse(request):
 
     bardata = [['Sum Amounts','RS'],['Invoice Sum',sumInvoiceAmount], ['GST Sum',sumGST],['Total Sum',sumTotalAmount]]
     quarterdata=[['Quarter','Invoice Amount'],['Quarter 1',q1],['Quarter 2',q2],['Quarter 3',q3],['Quarter 4',q4]]
-    bar_chart=BarChart(SimpleDataSource(data=bardata))
-    bar_chart_quarter=BarChart(SimpleDataSource(data=quarterdata))
+    bar_chart=BarChart(SimpleDataSource(data=bardata),options={'title': 'Comparison between Invoice, GST and Total Amount'})
+    bar_chart_quarter=BarChart(SimpleDataSource(data=quarterdata),options={'title': 'Quarter wise Invoice Amount'})
     return render(request, 'analyse.html', {'bar_chart':bar_chart,'quarter':bar_chart_quarter,'e':EndDate,'s':StartDate})
-#
-# def addclient(request):
