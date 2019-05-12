@@ -50,6 +50,41 @@
     </div>
 </div>
 {{quarter.as_html}}
+<div class="row">
+<div class="col-sm-6">
+{{revenue.as_html}}
+</div>
+    <div class="col-sm-6">
+        <br>
+        <br>
+        <br>
+<form action="" method="post">
+    {% csrf_token %}
+<div class="row">
+                  <div class="col-sm-3">
+                    <div class="form-group">
+                      <span class="form-label">Start Date</span>
+                      <input class="form-control" type="date" value={{s1}} id="startrevnue" name="startrevenue" required>
+                    </div>
+                     <div class="form-group">
+                      <span class="form-label">End Date</span>
+                      <input class="form-control" value={{e1}} type="date" id="endrevenue" name="endrevenue" required>
+                    </div>
 
+                      <input type="submit" value="Apply Filter"class="btn btn-primary">
+
+                  </div>
+
+
+</div>
+<br>
+</form>
+
+
+<form action="/analyse/" method="get">
+    <input type="submit" value="Clear Filter"class="btn btn-primary" >
+</form>
+    </div>
+</div>
 </body>
 </html>
